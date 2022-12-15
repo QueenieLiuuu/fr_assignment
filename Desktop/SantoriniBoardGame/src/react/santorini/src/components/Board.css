@@ -1,0 +1,11 @@
+.santorini-board {
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.santorini-board-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

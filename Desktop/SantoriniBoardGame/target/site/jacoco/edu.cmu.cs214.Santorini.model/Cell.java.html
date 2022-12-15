@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cell.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.model</a> &gt; <span class="el_source">Cell.java</span></div><h1>Cell.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.model;
+
+import java.util.Objects;
+
+/**
+ * Cell/Tower, is a 1x1 cell on the board.
+ * Worker can stand on a cell, or build a cell to make it height + 1
+ */
+public class Cell {
+    @Override
+    public String toString() {
+<span class="nc" id="L12">        return &quot;Cell{&quot; +</span>
+                &quot;height=&quot; + height +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="pc bpc" id="L19" title="1 of 2 branches missed.">        if (this == o) return true;</span>
+<span class="pc bpc" id="L20" title="2 of 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L21">        Cell cell = (Cell) o;</span>
+<span class="pc bpc" id="L22" title="1 of 2 branches missed.">        return height == cell.height;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L27">        return Objects.hash(height);</span>
+    }
+
+    public static class InvalidCellHeightError extends RuntimeException {
+        public InvalidCellHeightError(int h) {
+<span class="fc" id="L32">            super(&quot;invalid height: &quot; + h);</span>
+<span class="fc" id="L33">        }</span>
+    }
+
+    public static final int MAX_HEIGHT = 4;
+    private int height;
+
+<span class="fc" id="L39">    public Cell() {</span>
+<span class="fc" id="L40">        this.height = 0;</span>
+<span class="fc" id="L41">    }</span>
+
+<span class="fc" id="L43">    public Cell(int height) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (Math.abs(height) &gt; MAX_HEIGHT) {</span>
+<span class="fc" id="L45">            throw new InvalidCellHeightError(height);</span>
+        }
+<span class="fc" id="L47">        this.height = height;</span>
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * we use negative height to denote a dome.
+     * Normally, a dome is -4, but some gods can build a dome on the lower level.
+     */
+    public boolean isDome() {
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        return this.height &lt; 0;</span>
+    }
+
+    public int getHeight() {
+<span class="fc" id="L59">        return height;</span>
+    }
+
+    public void setHeight(int height) {
+<span class="fc" id="L63">        this.height = height;</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * build on this cell, improve height +1
+     * @return height after built, if failed to build, return 0
+     */
+    public int build() {
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (isDome()) {</span>
+<span class="fc" id="L72">            return 0;</span>
+        }
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">        if (isHighestWithoutDome()) {</span>
+<span class="nc" id="L75">            this.height = -(this.height + 1);</span>
+<span class="nc" id="L76">            return this.height;</span>
+        }
+<span class="fc" id="L78">        return ++this.height;</span>
+    }
+
+    /**
+     * build a dome on this cell, improve height +1 and make it negative
+     * @return height after built, if failed to build, return 0
+     */
+    public int buildDome() {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (isDome()) {</span>
+<span class="fc" id="L87">            return 0;</span>
+        }
+<span class="fc" id="L89">        this.height = -(this.height + 1);</span>
+<span class="fc" id="L90">        return this.height;</span>
+    }
+
+    public Cell copy() {
+<span class="fc" id="L94">        return new Cell(height);</span>
+    }
+
+    public boolean isHighestWithoutDome() {
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        return this.height == MAX_HEIGHT - 1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

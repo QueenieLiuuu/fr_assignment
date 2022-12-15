@@ -1,0 +1,13 @@
+.santorini-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.santorini-wrapper-header {
+    background-color: #135F91!important;
+}
+
+.santorini-wrapper-inner {
+    display: flex;
+    flex-direction: row;
+}

@@ -1,0 +1,10 @@
+edu/cmu/cs214/Santorini/model/DirectionTest.class
+edu/cmu/cs214/Santorini/state/run/BeforeBuildTest.class
+edu/cmu/cs214/Santorini/AbstractTest.class
+edu/cmu/cs214/Santorini/state/run/BeforeMoveTest.class
+edu/cmu/cs214/Santorini/model/BoardTest.class
+edu/cmu/cs214/Santorini/model/WorkerTest.class
+edu/cmu/cs214/Santorini/god/GodFactoryTest.class
+edu/cmu/cs214/Santorini/state/prepare/GodChosenTest.class
+edu/cmu/cs214/Santorini/state/prepare/InitWorkerTest.class
+edu/cmu/cs214/Santorini/model/CellTest.class

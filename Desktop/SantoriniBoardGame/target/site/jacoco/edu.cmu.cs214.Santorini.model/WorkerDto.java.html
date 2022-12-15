@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WorkerDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.model</a> &gt; <span class="el_source">WorkerDto.java</span></div><h1>WorkerDto.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.model;
+
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+/**
+ * Worker DTO, used for RESTful API serialization
+ */
+@JsonAutoDetect
+public final class WorkerDto {
+    final private int id;
+    final private int x;
+    final private int y;
+
+<span class="fc" id="L15">    public WorkerDto(int id, int x, int y) {</span>
+<span class="fc" id="L16">        this.id = id;</span>
+<span class="fc" id="L17">        this.x = x;</span>
+<span class="fc" id="L18">        this.y = y;</span>
+<span class="fc" id="L19">    }</span>
+
+    public int getId() {
+<span class="fc" id="L22">        return id;</span>
+    }
+
+    public int getX() {
+<span class="fc" id="L26">        return x;</span>
+    }
+
+    public int getY() {
+<span class="fc" id="L30">        return y;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

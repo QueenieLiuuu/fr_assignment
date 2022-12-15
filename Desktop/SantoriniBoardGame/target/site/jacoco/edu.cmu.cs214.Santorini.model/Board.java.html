@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Board.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.model</a> &gt; <span class="el_source">Board.java</span></div><h1>Board.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.model;
+
+import org.springframework.boot.web.embedded.undertow.UndertowWebServer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Board, the 5x5 chess board for the game
+ * contains cells (towers) with various heights
+ */
+public class Board {
+    public List&lt;List&lt;Integer&gt;&gt; to2DHeightList() {
+<span class="fc" id="L14">        List&lt;List&lt;Integer&gt;&gt; boardHeights = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (var row : this.innerBoard) {</span>
+<span class="fc" id="L16">            ArrayList&lt;Integer&gt; rowHeights = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">            for (Cell cell : row) {</span>
+<span class="fc" id="L18">                rowHeights.add(cell.getHeight());</span>
+<span class="fc" id="L19">            }</span>
+<span class="fc" id="L20">            boardHeights.add(rowHeights);</span>
+<span class="fc" id="L21">        }</span>
+<span class="fc" id="L22">        return boardHeights;</span>
+    }
+
+    public static class OutOfBoardError extends RuntimeException {
+        public OutOfBoardError(int x, int y) {
+<span class="fc" id="L27">            super(String.format(&quot;position (%1s,%2s) is out of board&quot;, x, y));</span>
+<span class="fc" id="L28">        }</span>
+    }
+
+    public static class ConflictWorkersError extends RuntimeException {
+        public ConflictWorkersError(int x, int y) {
+<span class="fc" id="L33">            super(String.format(&quot;cannot interact with (%1s,%2s) because a worker is on it&quot;, x, y));</span>
+<span class="fc" id="L34">        }</span>
+    }
+
+    public static final int BOARD_SIZE = 5;
+
+    private final List&lt;List&lt;Cell&gt;&gt; innerBoard;
+    private List&lt;Worker&gt; workers;
+
+<span class="fc" id="L42">    public Board(List&lt;List&lt;Cell&gt;&gt; innerBoard, List&lt;Worker&gt; workers) {</span>
+<span class="fc" id="L43">        this.innerBoard = innerBoard;</span>
+<span class="fc" id="L44">        this.workers = workers;</span>
+<span class="fc" id="L45">    }</span>
+
+<span class="fc" id="L47">    public Board() {</span>
+<span class="fc" id="L48">        innerBoard = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_SIZE; i++) {</span>
+<span class="fc" id="L50">            List&lt;Cell&gt; row = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_SIZE; j++) {</span>
+<span class="fc" id="L52">                row.add(new Cell());</span>
+            }
+<span class="fc" id="L54">            innerBoard.add(row);</span>
+        }
+<span class="fc" id="L56">        workers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L57">    }</span>
+
+    public List&lt;Worker&gt; getWorkers() {
+<span class="fc" id="L60">        return workers;</span>
+    }
+
+    /**
+     * add worker to the board
+     *
+     * @param worker new worker to add
+     * @return if add successfully
+     */
+    public boolean addWorker(Worker worker) {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (!workers.contains(worker)) {</span>
+<span class="fc" id="L71">            workers.add(worker);</span>
+<span class="fc" id="L72">            return true;</span>
+        }
+<span class="fc" id="L74">        return false;</span>
+    }
+
+    /**
+     * Given a position (x, y), check if this position is in board range
+     *
+     * @param x, x
+     * @param y, y
+     * @return boolean
+     */
+    public boolean positionInBoard(int x, int y) {
+<span class="fc bfc" id="L85" title="All 8 branches covered.">        return x &gt;= 0 &amp;&amp; y &gt;= 0 &amp;&amp; x &lt; getBoardSize() &amp;&amp; y &lt; getBoardSize();</span>
+    }
+
+    public boolean positionInBoard(Point p) {
+<span class="fc" id="L89">        return positionInBoard(p.x(), p.y());</span>
+    }
+
+    /**
+     * @return board size, default: 5
+     */
+    public int getBoardSize() {
+<span class="fc" id="L96">        return this.innerBoard.size();</span>
+    }
+
+    /**
+     * @return the cell on board(x,y)
+     * @throws OutOfBoardError if (x,y) is out of board
+     */
+    public Cell getCell(int x, int y) throws OutOfBoardError {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (!positionInBoard(x, y)) {</span>
+<span class="fc" id="L105">            throw new OutOfBoardError(x, y);</span>
+        }
+<span class="fc" id="L107">        return innerBoard.get(x).get(y);</span>
+    }
+
+    public Cell getCell(Point p) throws OutOfBoardError {
+<span class="fc" id="L111">        return getCell(p.x(), p.y());</span>
+    }
+
+    /**
+     * @throws Cell.InvalidCellHeightError if (x,y) is out of board or height is invalid
+     */
+    public void setCell(int x, int y, int height) throws Cell.InvalidCellHeightError {
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (!positionInBoard(x, y)) {</span>
+<span class="fc" id="L119">            throw new OutOfBoardError(x, y);</span>
+        }
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (Math.abs(height) &gt; Cell.MAX_HEIGHT) {</span>
+<span class="fc" id="L122">            throw new Cell.InvalidCellHeightError(height);</span>
+        }
+<span class="fc" id="L124">        getCell(x, y).setHeight(height);</span>
+<span class="fc" id="L125">    }</span>
+
+    /**
+     * @return true if there is a worker on position x,y, otherwise false
+     */
+    public boolean hasWorker(int x, int y) {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        return getWorker(x, y) != null;</span>
+    }
+
+    public boolean hasWorker(Point p) {
+<span class="fc" id="L135">        return this.hasWorker(p.x(), p.y());</span>
+    }
+
+    /**
+     * @return get worker if there is a worker on position x,y, otherwise null
+     */
+    public Worker getWorker(int x, int y) {
+<span class="fc bfc" id="L142" title="All 2 branches covered.">        for (Worker worker : workers) {</span>
+<span class="fc bfc" id="L143" title="All 4 branches covered.">            if (worker.getP().x() == x &amp;&amp; worker.getP().y() == y) {</span>
+<span class="fc" id="L144">                return worker;</span>
+            }
+<span class="fc" id="L146">        }</span>
+<span class="fc" id="L147">        return null;</span>
+    }
+
+    public Worker getWorker(Point p) {
+<span class="fc" id="L151">        return getWorker(p.x(), p.y());</span>
+    }
+
+
+    /**
+     * build on cell at board(x, y), improve height +1
+     *
+     * @return height after built, if failed to build, return -1
+     */
+    public int build(int x, int y, boolean buildDome) throws RuntimeException {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        if (!positionInBoard(x, y)) {</span>
+<span class="fc" id="L162">            throw new OutOfBoardError(x, y);</span>
+        }
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        if (hasWorker(x, y)) {</span>
+<span class="fc" id="L165">            throw new ConflictWorkersError(x, y);</span>
+        }
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (buildDome) {</span>
+<span class="fc" id="L168">            return this.getCell(x, y).buildDome();</span>
+        } else {
+<span class="fc" id="L170">            return this.getCell(x, y).build();</span>
+        }
+    }
+
+    public int build(int x, int y) throws RuntimeException {
+<span class="fc" id="L175">        return this.build(x, y, false);</span>
+    }
+
+    public int build(Point p, boolean buildDome) throws RuntimeException {
+<span class="fc" id="L179">        return this.build(p.x(), p.y(), buildDome);</span>
+    }
+
+    public int build(Point p) throws RuntimeException {
+<span class="nc" id="L183">        return this.build(p.x(), p.y());</span>
+    }
+
+    /**
+     * search two boards, return the first point that with different height
+     *
+     * @param b1 board 1
+     * @param b2 board 2
+     * @return diff position
+     */
+    public static Point findBoardDiff(Board b1, Board b2) {
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        for (int i = 0; i &lt; Board.BOARD_SIZE; i++) {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            for (int j = 0; j &lt; Board.BOARD_SIZE; j++) {</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">                if (b1.getCell(i, j).getHeight() != b2.getCell(i, j).getHeight()) {</span>
+<span class="fc" id="L197">                    return new Point(i, j);</span>
+                }
+            }
+        }
+<span class="fc" id="L201">        return null;</span>
+    }
+
+    /**
+     * dasher dash to victim, tries to force them backward.
+     * However, they cannot force when there is wall/another worker at the back
+     *
+     * @param dasher worker who dashes
+     * @param victim worker who suffers from the attack
+     * @return victim's new position if succeeded, else null
+     */
+    public Point dashToPosition(Point dasher, Point victim) {
+<span class="fc" id="L213">        int dx = victim.x() - dasher.x();</span>
+<span class="fc" id="L214">        int dy = victim.y() - dasher.y();</span>
+<span class="pc bpc" id="L215" title="2 of 4 branches missed.">        if (Math.abs(dx) &gt; 1 || Math.abs(dy) &gt; 1) {  // too far</span>
+<span class="nc" id="L216">            return null;</span>
+        }
+<span class="fc" id="L218">        int newX = victim.x() + dx;</span>
+<span class="fc" id="L219">        int newY = victim.y() + dy;</span>
+<span class="fc bfc" id="L220" title="All 4 branches covered.">        if (!this.positionInBoard(newX, newY) || this.hasWorker(newX, newY)</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">                || this.getCell(newX, newY).isDome()) {</span>
+<span class="fc" id="L222">            return null;</span>
+        }
+<span class="fc" id="L224">        return new Point(newX, newY);</span>
+    }
+
+    /**
+     * reset the board with heights=0
+     */
+    public void reset() {
+<span class="fc" id="L231">        this.workers.clear();</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">        for (int i = 0; i &lt; BOARD_SIZE; i++) {</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">            for (int j = 0; j &lt; BOARD_SIZE; j++) {</span>
+<span class="fc" id="L234">                setCell(i, j, 0);</span>
+            }
+        }
+<span class="fc" id="L237">    }</span>
+
+    /**
+     * Given a worker, return all possible points they can move to/build on
+     * a worker can move downstairs, one level upstairs but not a dome, or horizontally.
+     * a worker can build all surrounding cells that is without a dome.
+     *
+     * @param worker     a worker going to move/build
+     * @param movable    set true if the player gonna move, set false if they gonna build
+     * @param onOpponent set true if the player can move/build on opponent's worker
+     * @return a list of points available to move/build
+     */
+    public List&lt;Point&gt; getPoints(Worker worker, boolean movable, boolean onOpponent) {
+<span class="fc" id="L250">        List&lt;Direction&gt; directions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L251">        Point p = worker.getP();</span>
+<span class="fc" id="L252">        int x = p.x();</span>
+<span class="fc" id="L253">        int y = p.y();</span>
+<span class="fc" id="L254">        int currentHeight = getCell(x, y).getHeight();</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        for (Direction d : Direction.class.getEnumConstants()) {  // for each direction</span>
+<span class="fc" id="L256">            int newX = x + d.getValue()[0];</span>
+<span class="fc" id="L257">            int newY = y + d.getValue()[1];</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">            if (!positionInBoard(newX, newY)) {</span>
+<span class="fc" id="L259">                continue;</span>
+            }
+<span class="fc" id="L261">            Worker workerOnP = getWorker(newX, newY);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            if (workerOnP != null) {</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">                if (!onOpponent) {</span>
+<span class="fc" id="L264">                    continue;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">                } else if (workerOnP.getPlayer().equals(worker.getPlayer())) {</span>
+<span class="fc" id="L266">                    continue;</span>
+                }
+            }
+<span class="fc" id="L269">            Cell cell = getCell(newX, newY);</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">            if (cell.isDome()) {  // cannot stand/build on a dome</span>
+<span class="fc" id="L271">                continue;</span>
+            }
+<span class="fc" id="L273">            int height = cell.getHeight();</span>
+<span class="fc bfc" id="L274" title="All 4 branches covered.">            if (movable &amp;&amp; (height - currentHeight &gt; 1)) {  // cannot jump higher than one level</span>
+<span class="fc" id="L275">                continue;</span>
+            }
+<span class="fc" id="L277">            directions.add(d);</span>
+        }
+<span class="fc" id="L279">        List&lt;Point&gt; points = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        for (var d : directions) {</span>
+<span class="fc" id="L281">            points.add(new Point(x + d.getValue()[0], y + d.getValue()[1]));</span>
+<span class="fc" id="L282">        }</span>
+<span class="fc" id="L283">        return points;</span>
+    }
+
+    public List&lt;Point&gt; getPoints(Worker worker, boolean movable) {
+<span class="fc" id="L287">        return this.getPoints(worker, movable, false);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L292">        StringBuilder sb = new StringBuilder(&quot;Board{\n&quot;);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        for (var row : this.innerBoard) {</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">            for (Cell cell : row) {</span>
+<span class="fc" id="L295">                sb.append(String.format(&quot;%d,&quot;, cell.getHeight()));</span>
+<span class="fc" id="L296">            }</span>
+<span class="fc" id="L297">            sb.append(&quot;\n&quot;);</span>
+<span class="fc" id="L298">        }</span>
+<span class="fc" id="L299">        return sb.toString();</span>
+    }
+
+    /**
+     * Copy the board's all cells (but do not copy workers) and return the copied for immutable
+     * context.
+     * Because the players maintain their workers, if board copies too, there will be
+     * inconsistent workers.
+     *
+     * @param workers workers (probably copied by players)
+     * @return copied Board
+     */
+    public Board copy(List&lt;Worker&gt; workers) {
+<span class="fc" id="L312">        List&lt;List&lt;Cell&gt;&gt; copyBoard = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">        for (var row : innerBoard) {</span>
+<span class="fc" id="L314">            List&lt;Cell&gt; copyRow = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            for (var cell : row) {</span>
+<span class="fc" id="L316">                copyRow.add(cell.copy());</span>
+<span class="fc" id="L317">            }</span>
+<span class="fc" id="L318">            copyBoard.add(copyRow);</span>
+<span class="fc" id="L319">        }</span>
+<span class="fc" id="L320">        return new Board(copyBoard, workers);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

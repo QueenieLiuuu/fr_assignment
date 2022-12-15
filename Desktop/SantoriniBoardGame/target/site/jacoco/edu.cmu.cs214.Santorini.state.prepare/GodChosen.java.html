@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GodChosen.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.state.prepare</a> &gt; <span class="el_source">GodChosen.java</span></div><h1>GodChosen.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.state.prepare;
+
+import edu.cmu.cs214.Santorini.game.Context;
+import edu.cmu.cs214.Santorini.god.God;
+import edu.cmu.cs214.Santorini.god.GodName;
+import edu.cmu.cs214.Santorini.model.Player;
+import edu.cmu.cs214.Santorini.god.GodFactory;
+import edu.cmu.cs214.Santorini.state.State;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+/**
+ * Game just init and need to choose god
+ * BeforeState: null
+ * NextState: GodChosen/InitWorker
+ */
+public class GodChosen extends PrepareState {
+<span class="fc" id="L19">    public GodChosen() {</span>
+<span class="fc" id="L20">    }</span>
+
+    public GodChosen(Context context) {
+<span class="fc" id="L23">        super(context);</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * player choose god based on god name, choose Man if in simple mode
+     *
+     * @param player  player who chooses god
+     * @param godName name of god
+     * @return context(GodChosen) if player2 god unset, else return context(InitWorker)
+     */
+    public Context onChooseGod(Player player, String godName) {
+<span class="fc" id="L34">        Context lastContext = context.copy();</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (player.getGod() != null) {  // already chosen</span>
+<span class="fc" id="L36">            return null;</span>
+        }
+        God god;
+        try {
+<span class="fc" id="L40">            god = GodFactory.createGod(GodName.valueOf(godName));</span>
+<span class="fc" id="L41">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L42">            return null;</span>
+<span class="fc" id="L43">        }</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (god == null) {</span>
+<span class="nc" id="L45">            return null;</span>
+        }
+<span class="fc" id="L47">        player.setGod(god);</span>
+        int activePlayerId;
+        State nextState;
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (context.getPlayer2().getGod() != null) {</span>
+<span class="fc" id="L51">            activePlayerId = 1;</span>
+<span class="fc" id="L52">            nextState = new InitWorker();</span>
+        } else {
+<span class="fc" id="L54">            activePlayerId = 2;</span>
+<span class="fc" id="L55">            nextState = new GodChosen();</span>
+        }
+
+<span class="fc" id="L58">        Context nextContext = context.generateNext(</span>
+                nextState, activePlayerId, 0, new HashSet&lt;&gt;(), lastContext);
+<span class="fc" id="L60">        nextContext.getState().setContext(nextContext);</span>
+<span class="fc" id="L61">        return nextContext;</span>
+    }
+
+
+    @Override
+    public State copy() {
+<span class="fc" id="L67">        return new GodChosen(context);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

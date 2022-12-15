@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GodFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.god</a> &gt; <span class="el_source">GodFactory.java</span></div><h1>GodFactory.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.god;
+
+import edu.cmu.cs214.Santorini.god.strategy.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * use static Factory pattern to generate god by GodName (enum)
+ */
+<span class="nc" id="L12">public class GodFactory {</span>
+    /**
+     * generate all gods in game rules (for frontend display)
+     */
+    public static List&lt;God&gt; createAllGods() {
+<span class="fc" id="L17">        List&lt;God&gt; gods = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L18">        String[] godNames =</span>
+<span class="fc" id="L19">                Arrays.stream(GodName.class.getEnumConstants()).map(Enum::name).toArray(String[]::new);</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        for (String name : godNames) {</span>
+<span class="fc" id="L21">            gods.add(GodFactory.createGod(GodName.valueOf(name)));</span>
+        }
+<span class="fc" id="L23">        return gods;</span>
+    }
+
+    public static God createGod(GodName name) {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (name == GodName.Man) {</span>
+<span class="fc" id="L28">            return new God(</span>
+                    &quot;Man&quot;,
+                    &quot;I'm just me.&quot;,
+                    &quot;God bless me: (Nothing happened)&quot;,
+                    &quot;https://www.thestampmaker.com/stock_rubber_stamp_images/SSS1_HAPPY_FACE.jpg&quot;,
+                    new ManStrategy()
+            );
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        } else if (name == GodName.Pan) {</span>
+<span class="fc" id="L36">            return new God(</span>
+                    &quot;Pan&quot;,
+                    &quot;God of the Wild&quot;,
+                    &quot;Win Condition: You also win if &quot; +
+                            &quot;your Worker moves down two or more levels&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/pan.jpg&quot;,
+                    new PanStrategy()
+            );
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        } else if (name == GodName.Minotaur) {</span>
+<span class="fc" id="L45">            return new God(</span>
+                    &quot;Minotaur&quot;,
+                    &quot;Bull-headed Monster&quot;,
+                    &quot;Your Move: Your Worker may &quot; +
+                            &quot;move into an opponent Worker’s &quot; +
+                            &quot;space, if their Worker can be &quot; +
+                            &quot;forced one space straight backwards to an &quot; +
+                            &quot;unoccupied space at any level.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/minotaur.jpg&quot;,
+                    new MinotaurStrategy()
+            );
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        } else if (name == GodName.Athena) {</span>
+<span class="fc" id="L57">            return new God(</span>
+                    &quot;Athena&quot;,
+                    &quot;Goddess of Wisdom&quot;,
+                    &quot;Opponent's Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/athena.jpg&quot;,
+                    new AthenaStrategy()
+            );
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        } else if (name == GodName.Apollo) {</span>
+<span class="fc" id="L65">            return new God(</span>
+                    &quot;Apollo&quot;,
+                    &quot;God of Music&quot;,
+                    &quot;Your Move: Your Worker may move into an opponent Worker's space by forcing their Worker to the space yours just vacated.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/apollo.jpg&quot;,
+                    new ApolloStrategy()
+            );
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        } else if (name == GodName.Artemis) {</span>
+<span class="fc" id="L73">            return new God(</span>
+                    &quot;Artemis&quot;,
+                    &quot;Goddess of the Hunt&quot;,
+                    &quot;Your Move: Your Worker may move one additional time, but not back to its initial space.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/artemis.jpg&quot;,
+                    new ArtemisStrategy()
+            );
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        } else if (name == GodName.Atlas) {</span>
+<span class="fc" id="L81">            return new God(</span>
+                    &quot;Atlas&quot;,
+                    &quot;Titan Shouldering the Heavens&quot;,
+                    &quot;Your Build: Your Worker may build a dome at any level.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/atlas.jpg&quot;,
+                    new AtlasStrategy()
+            );
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        } else if (name == GodName.Demeter) {</span>
+<span class="fc" id="L89">            return new God(</span>
+                    &quot;Demeter&quot;,
+                    &quot;Goddess of the Harvest&quot;,
+                    &quot;Your Build: Your Worker may build one additional time, but not on the same space.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/demeter.jpg&quot;,
+                    new DemeterStrategy()
+            );
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        } else if (name == GodName.Hephaestus) {</span>
+<span class="fc" id="L97">            return new God(</span>
+                    &quot;Hephaestus&quot;,
+                    &quot;God of Blacksmiths&quot;,
+                    &quot;Your Build: Your Worker may build one additional block (not dome) on top of your first block.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/hephaestus.jpg&quot;,
+                    new HephaestusStrategy()
+            );
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        } else if (name == GodName.Hermes) {</span>
+<span class="fc" id="L105">            return new God(</span>
+                    &quot;Hermes&quot;,
+                    &quot;God of Travel&quot;,
+                    &quot;Your Turn: If your Workers do not move up or down, they may each move any number of times (even zero), and then either builds.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/hermes.jpg&quot;,
+                    new HermesStrategy()
+            );
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        } else if (name == GodName.Prometheus) {</span>
+<span class="fc" id="L113">            return new God(</span>
+                    &quot;Prometheus&quot;,
+                    &quot;Titan Benefactor of Mankind&quot;,
+                    &quot;Your Turn: If your Worker does not move up, it may build both before and after moving.&quot;,
+                    &quot;https://www.ultraboardgames.com/santorini/gfx/prometheus.jpg&quot;,
+                    new PrometheusStrategy()
+            );
+        }
+<span class="nc" id="L121">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

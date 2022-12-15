@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Direction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.model</a> &gt; <span class="el_source">Direction.java</span></div><h1>Direction.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.model;
+
+<span class="fc" id="L3">public enum Direction {</span>
+<span class="fc" id="L4">    NW(&quot;NW&quot;, new int[]{-1, -1}),</span>
+<span class="fc" id="L5">    N(&quot;N&quot;, new int[]{-1, 0}),</span>
+<span class="fc" id="L6">    NE(&quot;NE&quot;, new int[]{-1, 1}),</span>
+<span class="fc" id="L7">    E(&quot;E&quot;, new int[]{0, 1}),</span>
+<span class="fc" id="L8">    SE(&quot;SE&quot;, new int[]{1, 1}),</span>
+<span class="fc" id="L9">    S(&quot;S&quot;, new int[]{1, 0}),</span>
+<span class="fc" id="L10">    SW(&quot;SW&quot;, new int[]{1, -1}),</span>
+<span class="fc" id="L11">    W(&quot;W&quot;, new int[]{0, -1});</span>
+
+    private final String key;
+    private final int[] value;
+
+<span class="fc" id="L16">    Direction(String key, int[] value) {</span>
+<span class="fc" id="L17">        this.key = key;</span>
+<span class="fc" id="L18">        this.value = value;</span>
+<span class="fc" id="L19">    }</span>
+
+    public static Direction getDirectionFromKey(String key) {
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        for (Direction direction : values()) {</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">            if (direction.getKey().equals(key)) {</span>
+<span class="fc" id="L24">                return direction;</span>
+            }
+        }
+<span class="fc" id="L27">        return null;</span>
+    }
+
+    public String getKey() {
+<span class="fc" id="L31">        return key;</span>
+    }
+
+    public int[] getValue() {
+<span class="fc" id="L35">        return value;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

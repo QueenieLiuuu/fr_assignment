@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Win.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.state.run</a> &gt; <span class="el_source">Win.java</span></div><h1>Win.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.state.run;
+
+import edu.cmu.cs214.Santorini.game.Context;
+import edu.cmu.cs214.Santorini.model.Player;
+import edu.cmu.cs214.Santorini.state.Buff;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Win extends RunState {
+    public Player getPlayer() {
+<span class="nc" id="L12">        return player;</span>
+    }
+
+    private Player player;
+
+    public Win(Context context, Player player, List&lt;Buff&gt; buffs) {
+<span class="fc" id="L18">        super(context, buffs);</span>
+<span class="fc" id="L19">        this.player = player;</span>
+<span class="fc" id="L20">    }</span>
+
+<span class="fc" id="L22">    public Win(Player player) {</span>
+<span class="fc" id="L23">        this.player = player;</span>
+<span class="fc" id="L24">    }</span>
+
+    @Override
+    public Win copy() {
+<span class="fc" id="L28">        ArrayList&lt;Buff&gt; copyBuffs = new ArrayList&lt;&gt;(buffs);</span>
+<span class="fc" id="L29">        return new Win(context, player.copy(), copyBuffs);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InitWorker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.state.prepare</a> &gt; <span class="el_source">InitWorker.java</span></div><h1>InitWorker.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.state.prepare;
+
+import edu.cmu.cs214.Santorini.game.Context;
+import edu.cmu.cs214.Santorini.model.Board;
+import edu.cmu.cs214.Santorini.model.Player;
+import edu.cmu.cs214.Santorini.model.Point;
+import edu.cmu.cs214.Santorini.state.State;
+import edu.cmu.cs214.Santorini.state.run.BeforeMove;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Players completed choosing god, now they init workers
+ * BeforeState: ChooseGod
+ * NextState: InitWorker/BeforeMove
+ */
+public class InitWorker extends PrepareState {
+    public InitWorker(Context context) {
+<span class="fc" id="L22">        super(context);</span>
+<span class="fc" id="L23">    }</span>
+
+<span class="fc" id="L25">    public InitWorker() {}</span>
+
+    /**
+     * player set worker's initial positions on the board
+     * @param board board to set worker on
+     * @param player player who sets worker
+     * @param point the point the worker going to stand on
+     * @return context(BeforeMove) if both players set all workers, else context(InitWorker)
+     */
+    public Context onInitWorker(Board board, Player player, Point point) {
+<span class="fc" id="L35">        Context lastContext = context.copy();</span>
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">        if (player.getWorkers() != null &amp;&amp; player.getWorkers().size() &gt;= 2) {</span>
+<span class="fc" id="L37">            return null;</span>
+        }
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (!player.addWorker(board, point)) {</span>
+<span class="fc" id="L40">            return null;</span>
+        }
+        State nextState;
+<span class="fc" id="L43">        Set&lt;String&gt; nextAvailActions = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        int activePlayerId = context.getPlayer1().getWorkers().size() &lt; 2 ? 1 : 2;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (context.getPlayer2().getWorkers().size() &lt; 2) {</span>
+<span class="fc" id="L46">            nextState = new InitWorker();</span>
+        } else {
+<span class="fc" id="L48">            activePlayerId = 1;</span>
+<span class="fc" id="L49">            nextState = new BeforeMove(true);</span>
+<span class="fc" id="L50">            nextAvailActions = context.getCurrentStrategy().getAvailActions(</span>
+                    (BeforeMove) nextState, lastContext);
+        }
+<span class="fc" id="L53">        Context nextContext = context.generateNext(nextState, activePlayerId, 0,</span>
+                nextAvailActions, lastContext);
+<span class="fc" id="L55">        nextContext.getState().setContext(nextContext);</span>
+<span class="fc" id="L56">        return nextContext;</span>
+    }
+
+    @Override
+    public InitWorker copy() {
+<span class="fc" id="L61">        return new InitWorker(context);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

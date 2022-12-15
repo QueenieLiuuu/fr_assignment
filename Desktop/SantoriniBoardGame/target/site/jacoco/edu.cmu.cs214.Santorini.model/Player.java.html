@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.model</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.model;
+
+import edu.cmu.cs214.Santorini.god.God;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+
+/**
+ * There are two players in one game, and each player controls two workers
+ * A player has its own god character and it is unchangeable along the whole game
+ */
+public class Player {
+    private int id;
+    private ArrayList&lt;Worker&gt; workers;
+    private God god;
+
+<span class="fc" id="L19">    public Player(int id) {</span>
+<span class="fc" id="L20">        this.id = id;</span>
+<span class="fc" id="L21">        this.workers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L22">    }</span>
+
+<span class="fc" id="L24">    public Player(int id, ArrayList&lt;Worker&gt; workers, God god) {</span>
+<span class="fc" id="L25">        this.id = id;</span>
+<span class="fc" id="L26">        this.workers = workers;</span>
+<span class="fc" id="L27">        this.god = god;</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     * Create a new worker for player, place them on the board
+     * and add to the player's workers list
+     */
+    public boolean addWorker(Board board, Point point) {
+<span class="fc bfc" id="L35" title="All 6 branches covered.">        if (this.workers.size() &gt;= 2 || !board.positionInBoard(point) || board.hasWorker(point)) {</span>
+<span class="fc" id="L36">            return false;</span>
+        }
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        int wid = (this.id == 1) ? 1 : 3;</span>
+<span class="fc" id="L39">        wid += this.workers.size();</span>
+<span class="fc" id="L40">        Worker worker = new Worker(wid, this);</span>
+<span class="fc" id="L41">        worker.setP(point);</span>
+<span class="fc" id="L42">        this.workers.add(worker);</span>
+<span class="fc" id="L43">        board.addWorker(worker);</span>
+<span class="fc" id="L44">        return true;</span>
+    }
+
+    public List&lt;Worker&gt; getWorkers() {
+<span class="fc" id="L48">        return this.workers;</span>
+    }
+
+    public void setGod(God god) {
+<span class="fc" id="L52">        this.god = god;</span>
+<span class="fc" id="L53">    }</span>
+
+    public God getGod() {
+<span class="fc" id="L56">        return god;</span>
+    }
+
+    public int getId() {
+<span class="fc" id="L60">        return id;</span>
+    }
+
+    public void setId(int id) {
+<span class="nc" id="L64">        this.id = id;</span>
+<span class="nc" id="L65">    }</span>
+
+    public PlayerDto toDto() {
+<span class="fc" id="L68">        List&lt;WorkerDto&gt; workerDtos = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        for (var worker : workers) {</span>
+<span class="fc" id="L70">            workerDtos.add(worker.toDto());</span>
+<span class="fc" id="L71">        }</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        return new PlayerDto(id, workerDtos, god != null ? god.toDto() : null);</span>
+    }
+
+    public Player copy() {
+<span class="fc" id="L76">        ArrayList&lt;Worker&gt; copyWorkers = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (var worker : workers) {</span>
+<span class="fc" id="L78">            copyWorkers.add(worker.copy());</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">        return new Player(id, copyWorkers, god);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L85">        StringBuilder workerIds = new StringBuilder();</span>
+<span class="fc" id="L86">        workerIds.append('[');</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        for (var worker : workers) {</span>
+<span class="fc" id="L88">            workerIds.append(worker.getId());</span>
+<span class="fc" id="L89">            workerIds.append(&quot;,&quot;);</span>
+<span class="fc" id="L90">        }</span>
+<span class="fc" id="L91">        workerIds.append(']');</span>
+<span class="fc" id="L92">        return &quot;Player{&quot; +</span>
+                &quot;id=&quot; + id +
+                &quot;, workers=&quot; + workerIds +
+                &quot;, god=&quot; + god +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

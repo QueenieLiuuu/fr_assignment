@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Context.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.game</a> &gt; <span class="el_source">Context.java</span></div><h1>Context.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.game;
+
+import edu.cmu.cs214.Santorini.model.Board;
+import edu.cmu.cs214.Santorini.model.Player;
+import edu.cmu.cs214.Santorini.model.Worker;
+import edu.cmu.cs214.Santorini.state.State;
+import edu.cmu.cs214.Santorini.god.strategy.GodActionStrategy;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Game context, has one2one relation to state
+ * Each timeframe has a context with all the information of current stage
+ * Half-Immutable (some getter doesn't return copy for unittest convenience)
+ */
+public final class Context {
+<span class="fc" id="L20">    private static final AtomicInteger ID_GENERATOR = new AtomicInteger(1);</span>
+    final private int id;
+    final private State state;
+    final private Player player1;
+    final private Player player2;
+    final private int activePlayerId;
+    final private int activeWorkerId;
+    final private Board board;
+    final private Set&lt;String&gt; nextAvailActions;
+    final private Context lastContext;
+
+<span class="fc" id="L31">    public Context(State state, Player player1, Player player2, int activePlayerId, int activeWorkerId, Board board, Set&lt;String&gt; nextAvailActions, Context lastContext) {</span>
+<span class="fc" id="L32">        this.activePlayerId = activePlayerId;</span>
+<span class="fc" id="L33">        this.activeWorkerId = activeWorkerId;</span>
+<span class="fc" id="L34">        this.lastContext = lastContext;</span>
+<span class="fc" id="L35">        this.id = ID_GENERATOR.getAndIncrement();</span>
+<span class="fc" id="L36">        this.state = state;</span>
+<span class="fc" id="L37">        this.player1 = player1;</span>
+<span class="fc" id="L38">        this.player2 = player2;</span>
+<span class="fc" id="L39">        this.board = board;</span>
+<span class="fc" id="L40">        this.nextAvailActions = nextAvailActions;</span>
+<span class="fc" id="L41">    }</span>
+
+    public Context(int id, State state, Player player1, Player player2, int activePlayerId,
+<span class="fc" id="L44">                   int activeWorkerId, Board board, Set&lt;String&gt; nextAvailActions, Context lastContext) {</span>
+<span class="fc" id="L45">        this.id = id;</span>
+<span class="fc" id="L46">        this.activePlayerId = activePlayerId;</span>
+<span class="fc" id="L47">        this.activeWorkerId = activeWorkerId;</span>
+<span class="fc" id="L48">        this.lastContext = lastContext;</span>
+<span class="fc" id="L49">        this.state = state;</span>
+<span class="fc" id="L50">        this.player1 = player1;</span>
+<span class="fc" id="L51">        this.player2 = player2;</span>
+<span class="fc" id="L52">        this.board = board;</span>
+<span class="fc" id="L53">        this.nextAvailActions = nextAvailActions;</span>
+<span class="fc" id="L54">    }</span>
+
+    public State getState() {
+<span class="fc" id="L57">        return state;</span>
+    }
+
+    /**
+     * Get current player's god strategy for moving/building etc
+     *
+     * @return current strategy
+     */
+    public GodActionStrategy getCurrentStrategy() {
+<span class="fc" id="L66">        return getCurrentPlayer().getGod().getStrategy();</span>
+    }
+
+    public Set&lt;String&gt; getNextAvailActions() {
+<span class="fc" id="L70">        return nextAvailActions;</span>
+    }
+
+    public Player getCurrentPlayer() {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (activePlayerId == 1) {</span>
+<span class="fc" id="L75">            return player1;</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        } else if (activePlayerId == 2) {</span>
+<span class="fc" id="L77">            return player2;</span>
+        } else {
+<span class="nc" id="L79">            return null;</span>
+        }
+    }
+
+    public Player getOpponentPlayer() {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (activePlayerId == 1) {</span>
+<span class="fc" id="L85">            return player2;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        } else if (activePlayerId == 2) {</span>
+<span class="fc" id="L87">            return player1;</span>
+        } else {
+<span class="nc" id="L89">            return null;</span>
+        }
+    }
+
+    public int getActivePlayerId() {
+<span class="fc" id="L94">        return activePlayerId;</span>
+    }
+
+    public int getActiveWorkerId() {
+<span class="fc" id="L98">        return activeWorkerId;</span>
+    }
+
+    public Player getPlayer2() {
+<span class="fc" id="L102">        return player2;</span>
+    }
+
+    public Player getPlayer1() {
+<span class="fc" id="L106">        return player1;</span>
+    }
+
+    public Board getBoard() {
+<span class="fc" id="L110">        return board;</span>
+    }
+
+    public Context getLastContext() {
+<span class="fc" id="L114">        return lastContext;</span>
+    }
+
+    /**
+     * Get next Context with next state
+     * All params remain for next Context, e.g. BeforeBuild-&gt;AfterBuilt
+     *
+     * @param state next state
+     * @return next Context
+     */
+    public Context generateNext(State state, Set&lt;String&gt; nextAvailActions, Context lastContext) {
+<span class="fc" id="L125">        return generateNext(state, activePlayerId, activeWorkerId, nextAvailActions, lastContext);</span>
+    }
+
+    public Context generateNext(State state, boolean switchPlayer, Set&lt;String&gt; nextAvailActions,
+                                Context lastContext) {
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">        int nextActivePlayer = switchPlayer ? 3 - activePlayerId : activePlayerId;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        int nextActiveWorker = switchPlayer ? 0 : activeWorkerId;</span>
+<span class="fc" id="L132">        return generateNext(state, nextActivePlayer, nextActiveWorker, nextAvailActions, lastContext);</span>
+    }
+
+    public Context generateNext(State state, int activePlayerId, int activeWorkerId,
+                                Set&lt;String&gt; nextAvailActions, Context lastContext) {
+<span class="fc" id="L137">        Context next = new Context(state, player1, player2, activePlayerId, activeWorkerId,</span>
+<span class="fc" id="L138">                board, nextAvailActions, lastContext).copy();</span>
+<span class="fc" id="L139">        next.getState().setContext(next);</span>
+<span class="fc" id="L140">        return next;</span>
+    }
+
+    public ContextDto toDto() {
+<span class="fc" id="L144">        return this.toDto(false);</span>
+    }
+
+    public ContextDto toDto(boolean forLastContext) {
+<span class="fc" id="L148">        ContextDto lastContextDto = null;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">        if (this.lastContext != null) {</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            lastContextDto = forLastContext ? null : this.lastContext.toDto();</span>
+        }
+<span class="fc" id="L152">        return new ContextDto(</span>
+                this.id,
+<span class="fc" id="L154">                this.state.getClass().getSimpleName(),</span>
+<span class="fc" id="L155">                this.player1.toDto(),</span>
+<span class="fc" id="L156">                this.player2.toDto(),</span>
+                this.activePlayerId,
+                this.activeWorkerId,
+<span class="fc" id="L159">                this.board.to2DHeightList(),</span>
+                this.nextAvailActions,
+                lastContextDto
+        );
+    }
+
+    public Context copy() {
+<span class="fc" id="L166">        return copy(false);</span>
+    }
+
+    public Context copy(boolean forLastContext) {
+<span class="fc" id="L170">        Context lastContext = null;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (this.lastContext != null) {</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">            lastContext = forLastContext ? null : this.lastContext.copy();</span>
+        }
+<span class="fc" id="L174">        Player copyPlayer1 = this.player1.copy();</span>
+<span class="fc" id="L175">        Player copyPlayer2 = this.player2.copy();</span>
+<span class="fc" id="L176">        ArrayList&lt;Worker&gt; copyWorkers = new ArrayList&lt;&gt;(copyPlayer1.getWorkers());</span>
+<span class="fc" id="L177">        copyWorkers.addAll(copyPlayer2.getWorkers());</span>
+<span class="fc" id="L178">        return new Context(</span>
+                this.id,
+<span class="fc" id="L180">                this.state.copy(),</span>
+                copyPlayer1,
+                copyPlayer2,
+                this.activePlayerId,
+                this.activeWorkerId,
+<span class="fc" id="L185">                this.board.copy(copyWorkers),</span>
+                new HashSet&lt;&gt;(this.nextAvailActions),
+                lastContext
+        );
+    }
+
+
+    public int getId() {
+<span class="fc" id="L193">        return id;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L198">        return &quot;Context{&quot; +</span>
+                &quot;id=&quot; + id +
+<span class="fc" id="L200">                &quot;, state=&quot; + state.getClass().getSimpleName() +</span>
+                &quot;, player1=&quot; + player1 +
+                &quot;, player2=&quot; + player2 +
+                &quot;, activePlayerId=&quot; + activePlayerId +
+                &quot;, activeWorkerId=&quot; + activeWorkerId +
+                &quot;, board=&quot; + board +
+                &quot;, nextAvailActions=&quot; + nextAvailActions +
+<span class="fc bfc" id="L207" title="All 2 branches covered.">                &quot;, lastContext=&quot; + (lastContext != null ? lastContext.getId() : 0) +</span>
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DemeterStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.god.strategy</a> &gt; <span class="el_source">DemeterStrategy.java</span></div><h1>DemeterStrategy.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.god.strategy;
+
+import edu.cmu.cs214.Santorini.game.Context;
+import edu.cmu.cs214.Santorini.model.Board;
+import edu.cmu.cs214.Santorini.model.Point;
+import edu.cmu.cs214.Santorini.model.Worker;
+import edu.cmu.cs214.Santorini.state.Action;
+import edu.cmu.cs214.Santorini.state.run.BeforeBuild;
+import edu.cmu.cs214.Santorini.state.run.BeforeMove;
+import edu.cmu.cs214.Santorini.state.run.RunState;
+import edu.cmu.cs214.Santorini.state.run.Win;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * Your Worker may build one additional time, but not on the same space.
+ * (UI hint: You will likely need a way to indicate that the player wants to
+ * skip the optional second build, e.g., with a &quot;pass&quot; button or by clicking
+ * on the worker's current location)
+ */
+public class DemeterStrategy extends ManStrategy {
+<span class="fc" id="L25">    public DemeterStrategy() {</span>
+<span class="fc" id="L26">        buildableStates = new HashSet&lt;&gt;(List.of(BeforeMove.class, BeforeBuild.class));</span>
+<span class="fc" id="L27">        buildActions = new HashSet&lt;&gt;(List.of(Action.build, Action.pass));</span>
+<span class="fc" id="L28">    }</span>
+
+    @Override
+    public RunState build(Board board, Worker worker, Point p, int activeWorkerId,
+                          boolean builtDome, RunState runState) {
+<span class="pc bpc" id="L33" title="3 of 4 branches missed.">        if (builtDome &amp;&amp; !this.buildActions.contains(Action.buildDome) ||</span>
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">                !canBuild(board, worker, p, activeWorkerId, runState)) {</span>
+<span class="nc" id="L35">            return null;</span>
+        }
+<span class="fc" id="L37">        Board lastBoard = runState.getContext().getLastContext().getBoard();</span>
+<span class="fc" id="L38">        Point diffPoint = Board.findBoardDiff(lastBoard, board);</span>
+<span class="fc bfc" id="L39" title="All 4 branches covered.">        if (diffPoint != null &amp;&amp; diffPoint.equals(p)) {</span>
+<span class="fc" id="L40">            return null;  // cannot build on same place</span>
+        }
+        try {
+<span class="fc" id="L43">            board.build(p, builtDome);</span>
+<span class="nc" id="L44">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L45">            return null;</span>
+<span class="fc" id="L46">        }</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (BeforeBuild.class == runState.getContext().getLastContext().getState().getClass()) {</span>
+            // switch player
+<span class="fc" id="L49">            BeforeMove nextState = new BeforeMove(countdownBuff(</span>
+<span class="fc" id="L50">                    runState.getContext().getCurrentPlayer(), runState.getBuffs()));</span>
+<span class="fc" id="L51">            nextState.setNewTurn(true);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">            if (nextState.onCheckLose(runState.getContext().getBoard(),</span>
+<span class="fc" id="L53">                    runState.getContext().getOpponentPlayer())) {</span>
+<span class="nc" id="L54">                return new Win(runState.getContext().getCurrentPlayer());</span>
+            }
+<span class="fc" id="L56">            return nextState;</span>
+        }
+        // build again
+<span class="fc" id="L59">        return new BeforeBuild(runState.getBuffs());</span>
+    }
+
+    @Override
+    public RunState pass(RunState runState) {
+<span class="fc" id="L64">        Context lastContext = runState.getContext().getLastContext();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (!(runState.getClass() == BeforeBuild.class &amp;&amp;</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">                lastContext.getState().getClass() == BeforeBuild.class)) {</span>
+<span class="nc" id="L67">            return null;</span>
+        }
+<span class="fc" id="L69">        return new BeforeMove(countdownBuff(</span>
+<span class="fc" id="L70">                runState.getContext().getCurrentPlayer(), runState.getBuffs()), true);</span>
+    }
+
+    @Override
+    public Set&lt;String&gt; getAvailActions(RunState runState, Context lastContext) {
+<span class="fc" id="L75">        Set&lt;String&gt; nextAvailActions = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (movableStates.contains(runState.getClass())) {</span>
+<span class="fc" id="L77">            nextAvailActions.addAll(moveActions.stream().map(Enum::name).toList());</span>
+        }
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if (buildableStates.contains(runState.getClass())) {</span>
+<span class="fc" id="L80">            nextAvailActions.add(Action.build.name());</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">            if (BeforeBuild.class == lastContext.getState().getClass() &amp;&amp;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">                    BeforeBuild.class == runState.getClass()) {</span>
+<span class="fc" id="L83">                nextAvailActions.add(Action.pass.name());</span>
+            }
+        }
+<span class="fc" id="L86">        return nextAvailActions;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

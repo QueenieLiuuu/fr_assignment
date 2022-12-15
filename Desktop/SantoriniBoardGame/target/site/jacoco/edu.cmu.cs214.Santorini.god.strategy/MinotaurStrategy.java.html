@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinotaurStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.god.strategy</a> &gt; <span class="el_source">MinotaurStrategy.java</span></div><h1>MinotaurStrategy.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.god.strategy;
+
+import edu.cmu.cs214.Santorini.model.Board;
+import edu.cmu.cs214.Santorini.model.Point;
+import edu.cmu.cs214.Santorini.model.Worker;
+import edu.cmu.cs214.Santorini.state.run.BeforeBuild;
+import edu.cmu.cs214.Santorini.state.run.RunState;
+import edu.cmu.cs214.Santorini.state.run.Win;
+
+/*
+ * Your Worker may move into an opponent Worker’s space,
+ * if their Worker can be forced one space straight backwards
+ * to an unoccupied space at any level.
+ */
+<span class="fc" id="L15">public class MinotaurStrategy extends ManStrategy {</span>
+    @Override
+    public RunState move(Board board, Worker worker, Point p, RunState runState) {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (!canMove(board, worker, p, runState, true)) {</span>
+<span class="fc" id="L19">            return null;</span>
+        }
+<span class="fc" id="L21">        Worker workerToDash = board.getWorker(p);</span>
+<span class="pc bpc" id="L22" title="1 of 4 branches missed.">        if (workerToDash != null &amp;&amp; workerToDash.getPlayer().getId() != worker.getPlayer().getId()) {</span>
+            // if there is a worker and not ally, we can dash
+<span class="fc" id="L24">            Point targetPoint = board.dashToPosition(worker.getP(), workerToDash.getP());</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            if (targetPoint == null) {</span>
+<span class="fc" id="L26">                return null;  // invalid dash position</span>
+            }
+<span class="fc" id="L28">            workerToDash.setP(targetPoint);</span>
+        }
+<span class="fc" id="L30">        worker.setP(p);</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (isWin(board, worker, runState)) {</span>
+<span class="fc" id="L32">            return new Win(worker.getPlayer());</span>
+        }
+<span class="fc" id="L34">        return new BeforeBuild(runState.getBuffs());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

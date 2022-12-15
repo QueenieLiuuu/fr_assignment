@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GameController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.game</a> &gt; <span class="el_source">GameController.java</span></div><h1>GameController.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.game;
+
+import edu.cmu.cs214.Santorini.model.Player;
+import edu.cmu.cs214.Santorini.model.Point;
+import edu.cmu.cs214.Santorini.model.Worker;
+import edu.cmu.cs214.Santorini.state.prepare.GodChosen;
+import edu.cmu.cs214.Santorini.state.prepare.InitWorker;
+import edu.cmu.cs214.Santorini.state.run.RunState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+/**
+ * GameController contains RESTful APIs
+ */
+@CrossOrigin
+@RestController
+<span class="fc" id="L19">public class GameController {</span>
+    @Autowired
+    Game game;
+
+    /**
+     * @return all contexts in the game session
+     */
+    @PostMapping(&quot;/game/init/&quot;)
+    public ContextDto init() {
+<span class="fc" id="L28">        game.reset();</span>
+<span class="fc" id="L29">        Context context = game.createFirstContext();</span>
+<span class="fc" id="L30">        return context.toDto();</span>
+    }
+
+    /**
+     * player choose god
+     *
+     * @return raise 400 if god name invalid, raise 404 if playerId invalid,
+     * 400 if at wrong state
+     */
+    @GetMapping(&quot;/game/choose_god/&quot;)
+    public @ResponseBody
+    ContextDto chooseGod(@RequestParam int playerId, @RequestParam String godName) {
+<span class="fc" id="L42">        System.out.println(&quot;choose god, pid=&quot; + playerId + &quot;, gname=&quot; + godName);</span>
+<span class="fc" id="L43">        Context currentContext = game.getCurrentContext();</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (!(currentContext.getState() instanceof GodChosen currentState)) {</span>
+<span class="nc" id="L45">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+        Player player;
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (1 == playerId) {</span>
+<span class="fc" id="L49">            player = currentContext.getPlayer1();</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        } else if (2 == playerId) {</span>
+<span class="fc" id="L51">            player = currentContext.getPlayer2();</span>
+        } else {
+<span class="nc" id="L53">            throw new ResponseStatusException(HttpStatus.NOT_FOUND);</span>
+        }
+        try {
+<span class="fc" id="L56">            var nextContext = currentState.onChooseGod(player, godName);</span>
+<span class="fc" id="L57">            game.setCurrentContextId(nextContext.getId());</span>
+<span class="fc" id="L58">            game.addContextAndRemoveFollowing(nextContext);</span>
+<span class="fc" id="L59">            return nextContext.toDto();</span>
+<span class="nc" id="L60">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L61">            e.printStackTrace();</span>
+<span class="nc" id="L62">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+    }
+
+    /**
+     * player set worker
+     *
+     * @return raise 404 if playerId invalid,
+     * 400 if at wrong state or already worker there
+     */
+    @GetMapping(&quot;/game/init_worker/&quot;)
+    public @ResponseBody
+    ContextDto initWorker(@RequestParam int playerId, @RequestParam int x, @RequestParam int y) {
+<span class="fc" id="L75">        System.out.println(&quot;set worker, pid=&quot; + playerId + &quot;, x=&quot; + x + &quot;, y=&quot; + y);</span>
+<span class="fc" id="L76">        Context currentContext = game.getCurrentContext();</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (!(currentContext.getState() instanceof InitWorker currentState)) {</span>
+<span class="nc" id="L78">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+        Player player;
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (1 == playerId) {</span>
+<span class="fc" id="L82">            player = currentContext.getPlayer1();</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        } else if (2 == playerId) {</span>
+<span class="fc" id="L84">            player = currentContext.getPlayer2();</span>
+        } else {
+<span class="nc" id="L86">            throw new ResponseStatusException(HttpStatus.NOT_FOUND);</span>
+        }
+<span class="fc" id="L88">        var nextContext = currentState.onInitWorker(</span>
+<span class="fc" id="L89">                game.getCurrentContext().getBoard(), player, new Point(x, y));</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (nextContext == null) {</span>
+<span class="nc" id="L91">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L93">        game.setCurrentContextId(nextContext.getId());</span>
+<span class="fc" id="L94">        game.addContextAndRemoveFollowing(nextContext);</span>
+<span class="fc" id="L95">        return nextContext.toDto();</span>
+    }
+
+    /**
+     * worker move
+     *
+     * @return raise 400 if failed to move
+     */
+    @GetMapping(&quot;/game/move/&quot;)
+    public @ResponseBody
+    ContextDto move(@RequestParam int workerId, @RequestParam int x, @RequestParam int y) {
+<span class="fc" id="L106">        System.out.println(&quot;move, wid=&quot; + workerId + &quot;, x=&quot; + x + &quot;, y=&quot; + y);</span>
+<span class="fc" id="L107">        Context currentContext = game.getCurrentContext();</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        if (!(currentContext.getState() instanceof RunState currentState)) {</span>
+<span class="nc" id="L109">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L111">        Worker worker = game.getWorkerById(workerId, true);</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (worker == null) {</span>
+<span class="nc" id="L113">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L115">        var nextContext = currentState.onMove(</span>
+                worker, new Point(x, y));
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (nextContext == null) {</span>
+<span class="nc" id="L118">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L120">        game.setCurrentContextId(nextContext.getId());</span>
+<span class="fc" id="L121">        game.addContextAndRemoveFollowing(nextContext);</span>
+<span class="fc" id="L122">        return nextContext.toDto();</span>
+    }
+
+    /**
+     * worker build
+     * buildDome means specifically build dome on any level
+     * @return raise 400 if failed to build
+     */
+    @GetMapping(&quot;/game/build/&quot;)
+    public @ResponseBody
+    ContextDto build(@RequestParam int workerId, @RequestParam int x, @RequestParam int y,
+                     @RequestParam boolean buildDome) {
+<span class="fc" id="L134">        System.out.println(&quot;build, wid=&quot; + workerId + &quot;, x=&quot; + x + &quot;, y=&quot; + y);</span>
+<span class="fc" id="L135">        Context currentContext = game.getCurrentContext();</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">        if (!(currentContext.getState() instanceof RunState currentState)) {</span>
+<span class="nc" id="L137">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L139">        Worker worker = game.getWorkerById(workerId, true);</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        if (worker == null) {</span>
+<span class="nc" id="L141">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L143">        var nextContext = currentState.onBuild(</span>
+                worker, new Point(x, y), buildDome);
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (nextContext == null) {</span>
+<span class="nc" id="L146">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="fc" id="L148">        game.setCurrentContextId(nextContext.getId());</span>
+<span class="fc" id="L149">        game.addContextAndRemoveFollowing(nextContext);</span>
+<span class="fc" id="L150">        return nextContext.toDto();</span>
+    }
+
+    /**
+     * worker pass this stage (working with god power)
+     * buildDome means specifically pass your turn
+     * @return raise 400 if failed to pass
+     */
+    @GetMapping(&quot;/game/pass/&quot;)
+    public @ResponseBody
+    ContextDto build() {
+<span class="nc" id="L161">        Context currentContext = game.getCurrentContext();</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (!(currentContext.getState() instanceof RunState currentState)) {</span>
+<span class="nc" id="L163">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="nc" id="L165">        var nextContext = currentState.onPass();</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (nextContext == null) {</span>
+<span class="nc" id="L167">            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);</span>
+        }
+<span class="nc" id="L169">        game.setCurrentContextId(nextContext.getId());</span>
+<span class="nc" id="L170">        game.addContextAndRemoveFollowing(nextContext);</span>
+<span class="nc" id="L171">        return nextContext.toDto();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

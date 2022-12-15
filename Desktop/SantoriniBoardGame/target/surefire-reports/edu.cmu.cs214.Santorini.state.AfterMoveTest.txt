@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: edu.cmu.cs214.Santorini.state.AfterMoveTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in edu.cmu.cs214.Santorini.state.AfterMoveTest
+edu.cmu.cs214.Santorini.state.AfterMoveTest.initializationError  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoClassDefFoundError: edu/cmu/cs214/Santorini/state/run/AfterMove
+Caused by: java.lang.ClassNotFoundException: edu.cmu.cs214.Santorini.state.run.AfterMove
+

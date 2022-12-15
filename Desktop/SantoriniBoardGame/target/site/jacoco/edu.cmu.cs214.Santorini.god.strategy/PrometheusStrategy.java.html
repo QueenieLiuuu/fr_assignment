@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PrometheusStrategy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Santorini</a> &gt; <a href="index.source.html" class="el_package">edu.cmu.cs214.Santorini.god.strategy</a> &gt; <span class="el_source">PrometheusStrategy.java</span></div><h1>PrometheusStrategy.java</h1><pre class="source lang-java linenums">package edu.cmu.cs214.Santorini.god.strategy;
+
+import edu.cmu.cs214.Santorini.model.Board;
+import edu.cmu.cs214.Santorini.model.Point;
+import edu.cmu.cs214.Santorini.model.Worker;
+import edu.cmu.cs214.Santorini.state.Action;
+import edu.cmu.cs214.Santorini.state.Buff;
+import edu.cmu.cs214.Santorini.state.run.BeforeBuild;
+import edu.cmu.cs214.Santorini.state.run.BeforeMove;
+import edu.cmu.cs214.Santorini.state.run.RunState;
+import edu.cmu.cs214.Santorini.state.run.Win;
+
+import java.util.HashSet;
+import java.util.List;
+
+/**
+ * Your Turn: If your Worker does not move up,
+ * it may build both before and after moving.
+ */
+public class PrometheusStrategy extends ManStrategy {
+<span class="fc" id="L21">    public PrometheusStrategy() {</span>
+<span class="fc" id="L22">        buildableStates = new HashSet&lt;&gt;(List.of(BeforeMove.class, BeforeBuild.class));</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public RunState build(Board board, Worker worker, Point p, int activeWorkerId,
+                          boolean builtDome, RunState runState) {
+<span class="pc bpc" id="L28" title="3 of 4 branches missed.">        if (builtDome &amp;&amp; !this.buildActions.contains(Action.buildDome) ||</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">                !canBuild(board, worker, p, activeWorkerId, runState)) {</span>
+<span class="nc" id="L30">            return null;</span>
+        }
+<span class="fc" id="L32">        List&lt;Buff&gt; buffs = runState.getBuffs();</span>
+<span class="fc" id="L33">        boolean isNewTurn = true;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (runState.getClass().equals(BeforeMove.class)) {</span>
+            // if build before move, then cannot move up
+<span class="fc" id="L36">            buffs.add(new Buff(worker.getPlayer().getId(),</span>
+                    1, Buff.BuffType.cannotMoveUp));
+<span class="fc" id="L38">            isNewTurn = false;</span>
+        }
+        try {
+<span class="fc" id="L41">            board.build(p, builtDome);</span>
+<span class="nc" id="L42">        } catch (RuntimeException e) {</span>
+<span class="nc" id="L43">            return null;</span>
+<span class="fc" id="L44">        }</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (isNewTurn) {</span>
+<span class="fc" id="L46">            buffs = countdownBuff(worker.getPlayer(), buffs);</span>
+        }
+<span class="fc" id="L48">        BeforeMove nextState = new BeforeMove(buffs, isNewTurn);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        if (nextState.onCheckLose(runState.getContext().getBoard(),</span>
+<span class="fc" id="L50">                runState.getContext().getOpponentPlayer())) {</span>
+<span class="nc" id="L51">            return new Win(runState.getContext().getCurrentPlayer());</span>
+        }
+<span class="fc" id="L53">        return nextState;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

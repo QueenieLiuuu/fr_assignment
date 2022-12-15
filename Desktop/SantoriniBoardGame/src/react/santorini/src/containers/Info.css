@@ -1,0 +1,21 @@
+.santorini-sider-info {
+    padding: 15px;
+}
+
+.santorini-sider-info-general {
+    padding-top: 20px;
+    font-size: large;
+}
+
+.santorini-sider-info-god {
+    border-bottom: black 1px solid;
+}
+
+.santorini-sider-info-undo-redo-btns {
+    border-bottom: black 1px solid;
+    padding-bottom: 10px;
+}
+
+.santorini-sider-info-undo-redo-btns > button {
+    margin: 5px;
+}
